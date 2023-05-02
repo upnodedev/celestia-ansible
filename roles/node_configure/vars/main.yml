@@ -1,0 +1,43 @@
+---
+config_port_changes:
+  'laddr = "tcp://0.0.0.0:26656"': 'laddr = "tcp://0.0.0.0:{{ custom_port_prefix }}56"'
+  'laddr = "tcp://127.0.0.1:26657"': 'laddr = "tcp://0.0.0.0:{{ custom_port_prefix }}57"'
+  'proxy_app = "tcp://127.0.0.1:26658"': 'proxy_app = "tcp://127.0.0.1:{{ custom_port_prefix }}58"'
+  'prometheus_listen_addr = ":26660"': 'prometheus_listen_addr = ":{{ custom_port_prefix }}61"'
+  'pprof_laddr = "localhost:6060"': 'pprof_laddr = "localhost:{{ custom_port_prefix }}60"'
+
+config_external_privValidator:
+  'priv_validator_laddr[[:space:]]+=[[:space:]]+': 'priv_validator_laddr = "tcp://{kms_address}:26658"'
+  'priv_validator_key_file[[:space:]]+=.*$': '#priv_validator_key_file = "config/priv_validator_key.json"'
+  'priv_validator_state_file': '#priv_validator_state_file = "data/priv_validator_state.json"'
+app_port_changes:
+  'address = "tcp://0.0.0.0:1317"': 'address = "tcp://0.0.0.0:{{ custom_port_prefix }}17"'
+  'address = ":8080"': 'address = ":{{ custom_port_prefix }}80"'
+  'address = "0.0.0.0:9090"': 'address = "0.0.0.0:{{ custom_port_prefix }}90"'
+  'address = "0.0.0.0:9091"': 'address = "0.0.0.0:{{ custom_port_prefix }}91"'
+pruning_main_backup:
+  'pruning = "': 'pruning = "custom"'
+  'pruning-keep-recent = "': 'pruning-keep-recent = "100"'
+  'pruning-interval = "': 'pruning-interval = "19"'
+  'snapshot-interval = ': 'snapshot-interval = 0'
+pruning_relayer:
+  'pruning = "': 'pruning = "custom"'
+  'pruning-keep-recent = "': 'pruning-keep-recent = "40000"'
+  'pruning-keep-every = "': 'pruning-keep-every = "2000"'
+  'pruning-interval = "': 'pruning-interval = "17"'
+  'snapshot-interval = ': 'snapshot-interval = 2000'
+  'snapshot-keep-recent = ': 'snapshot-keep-recent= 5'
+  'enabled-unsafe-cors = ': 'enabled-unsafe-cors = false'
+pruning_test:
+  'pruning = "': 'pruning = "custom"'
+  'pruning-keep-recent = "': 'pruning-keep-recent = "100"'
+  'pruning-interval = "': 'pruning-interval = "17"'
+  'snapshot-interval = ': 'snapshot-interval = 0'
+pruning_testrelay:
+  'pruning = "': 'pruning = "custom"'
+  'pruning-keep-recent = "': 'pruning-keep-recent = "10000"'
+  'pruning-keep-every = "': 'pruning-keep-every = "2000"'
+  'pruning-interval = "': 'pruning-interval = "17"'
+  'snapshot-interval = ': 'snapshot-interval = 2000'
+  'snapshot-keep-recent = ': 'snapshot-keep-recent= 5'
+

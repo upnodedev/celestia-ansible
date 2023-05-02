@@ -1,0 +1,64 @@
+---
+- name: Clone Celestia Node repository
+  git:
+    repo: https://github.com/celestiaorg/celestia-node.git
+    dest: "{{ user_dir }}/celestia-node"
+    version: "{{ celestia_node_version }}"
+  register: clone_result
+
+- name: Build Celestia Node binary
+  shell: make build
+  args:
+    chdir: "{{ user_dir }}/celestia-node"
+  when: clone_result.changed
+
+- name: Move Celestia Node binary to /usr/local/bin
+  become: true
+  copy:
+    src: "{{ user_dir }}/celestia-node/build/celestia"
+    dest: /usr/local/bin/
+    mode: "0755"
+
+- name: Generate Celestia Node key
+  shell: make cel-key
+  args:
+    chdir: "{{ user_dir }}/celestia-node"
+  when: not key_generated
+
+- name: Move Celestia Node key to /usr/local/bin
+  become: true
+  copy:
+    src: "{{ user_dir }}/celestia-node/cel-key"
+    dest: /usr/local/bin/
+    mode: "0755"
+
+- name: Initialize Celestia Bridge
+  shell: |
+    celestia bridge init \
+      --p2p.network {{ celestia_node_p2p_network }} \
+      --core.ip {{ celestia_node_core_ip }} \
+      --core.rpc.port {{ celestia_node_core_rpc_port }} \
+      --core.grpc.port {{ celestia_node_core_grpc_port }} \
+      --gateway \
+      --gateway.addr 0.0.0.0 \
+      --gateway.port {{ celestia_node_gateway_port }} \
+      --rpc.addr 0.0.0.0 \
+      --rpc.port {{ celestia_node_bridge_rpc_port }} \
+      --keyring.accname BRIDGE_WALLET
+
+- name: Copy celestia-bridge service file
+  become: true
+  template:
+    src: celestia-bridge.service.j2
+    dest: /etc/systemd/system/{{ network }}-celestia-{{ celestia_node_type }}.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Start Celestia Bridge
+  become: true
+  systemd:
+    name: "{{ network }}-celestia-{{ celestia_node_type }}"
+    state: restarted
+    daemon_reload: yes
+    enabled: yes

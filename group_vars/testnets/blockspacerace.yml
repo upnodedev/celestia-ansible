@@ -1,0 +1,17 @@
+network: celestia
+folder: '.celestia-app'
+daemon: celestia-appd
+chain_id: blockspacerace-0
+node_version: 'v0.12.2'
+repo: https://github.com/celestiaorg/celestia-app.git
+genesis: 'https://raw.githubusercontent.com/celestiaorg/networks/master/blockspacerace/genesis.json'
+seeds: '0293f2cf7184da95bc6ea6ff31c7e97578b9c7ff@65.109.106.95:26656,8f14ec71e1d712c912c27485a169c2519628cfb6@celest-test-seed.theamsolutions.info:22256'
+custom_port_prefix: 266
+
+# Celestia-node
+celestia_node_version: "v0.9.1"
+celestia_node_p2p_network: "blockspacerace"
+
+# [Optional] Snapshot
+snapshot_hour: 2
+snapshot_minute: 0

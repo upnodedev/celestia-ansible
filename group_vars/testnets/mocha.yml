@@ -1,0 +1,18 @@
+network: celestia
+folder: '.celestia-app'
+daemon: celestia-appd
+chain_id: mocha
+node_version: 'v0.11.0'
+repo: https://github.com/celestiaorg/celestia-app.git
+genesis: 'https://raw.githubusercontent.com/celestiaorg/networks/master/mocha/genesis.json'
+seeds: 'ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@testnet-seeds.polkachu.com:11656'
+peers: 'eaa763cde89fcf5a8fe44274a5ee3ce24bce2c5b@64.227.18.169:26656,0d0f0e4a149b50a96207523a5408611dae2796b6@198.199.82.109:26656,c2870ce12cfb08c4ff66c9ad7c49533d2bd8d412@178.170.47.171:26656'
+custom_port_prefix: 116
+
+# Celestia-node
+celestia_node_version: "v0.6.4"
+celestia_node_p2p_network: "mocha"
+
+# [Optional] Snapshot
+snapshot_hour: 2
+snapshot_minute: 0

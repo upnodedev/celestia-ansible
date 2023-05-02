@@ -1,0 +1,10 @@
+---
+celestia_node_type: "bridge"
+
+celestia_node_version: "v0.9.1"
+celestia_node_p2p_network: "blockspacerace"
+celestia_node_core_ip: "http://localhost"
+celestia_node_core_rpc_port: "{{ custom_port_prefix }}57"
+celestia_node_core_grpc_port: "{{ custom_port_prefix }}90"
+celestia_node_bridge_rpc_port: "{{ custom_port_prefix }}58"
+celestia_node_gateway_port: "{{ custom_port_prefix }}59"

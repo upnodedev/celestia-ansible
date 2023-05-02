@@ -19,11 +19,16 @@
     dest: /usr/local/bin/
     mode: "0755"
 
+- name: Check if keys exists
+  stat:
+    path: "{{ user_dir }}/.celestia-bridge-{{ chain_id }}/keys"
+  register: key_generated
+
 - name: Generate Celestia Node key
   shell: make cel-key
   args:
     chdir: "{{ user_dir }}/celestia-node"
-  when: not key_generated
+  when: not key_generated.stat.exists
 
 - name: Move Celestia Node key to /usr/local/bin
   become: true
@@ -32,7 +37,7 @@
     dest: /usr/local/bin/
     mode: "0755"
 
-- name: Initialize Celestia Bridge
+- name: Initialize Celestia Bridge Node
   shell: |
     celestia bridge init \
       --p2p.network {{ celestia_node_p2p_network }} \
@@ -45,6 +50,20 @@
       --rpc.addr 0.0.0.0 \
       --rpc.port {{ celestia_node_bridge_rpc_port }} \
       --keyring.accname BRIDGE_WALLET
+  when: celestia_node_type == "bridge"
+
+- name: Initialize Celestia Light Node
+  shell: |
+    celestia light init \
+      --p2p.network {{ celestia_node_p2p_network }} \
+      --core.ip {{ celestia_node_core_ip }} \
+      --core.rpc.port {{ celestia_node_core_rpc_port }} \
+      --core.grpc.port {{ celestia_node_core_grpc_port }} \
+      --gateway \
+      --gateway.addr 0.0.0.0 \
+      --gateway.port {{ celestia_node_gateway_port }} \
+      --keyring.accname BRIDGE_WALLET
+  when: celestia_node_type == "light"
 
 - name: Copy celestia-bridge service file
   become: true

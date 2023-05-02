@@ -10,7 +10,9 @@
   shell: make build
   args:
     chdir: "{{ user_dir }}/celestia-node"
-  when: clone_result.changed
+  environment:
+    PATH: '{{ path }}'
+    GOPATH: '{{ user_dir }}/go'
 
 - name: Move Celestia Node binary to /usr/local/bin
   become: true
@@ -18,17 +20,15 @@
     src: "{{ user_dir }}/celestia-node/build/celestia"
     dest: /usr/local/bin/
     mode: "0755"
+    remote_src: true
 
-- name: Check if keys exists
-  stat:
-    path: "{{ user_dir }}/.celestia-bridge-{{ chain_id }}/keys"
-  register: key_generated
-
-- name: Generate Celestia Node key
+- name: Build Celestia Node key
   shell: make cel-key
   args:
     chdir: "{{ user_dir }}/celestia-node"
-  when: not key_generated.stat.exists
+  environment:
+    PATH: '{{ path }}'
+    GOPATH: '{{ user_dir }}/go'
 
 - name: Move Celestia Node key to /usr/local/bin
   become: true
@@ -36,6 +36,16 @@
     src: "{{ user_dir }}/celestia-node/cel-key"
     dest: /usr/local/bin/
     mode: "0755"
+    remote_src: true
+
+- name: Check if keys exists
+  stat:
+    path: "{{ user_dir }}/.celestia-bridge-{{ chain_id }}/keys"
+  register: key_generated
+
+- name: Generate key
+  when: not key_generated.stat.exists
+  shell: cel-key add BRIDGE_WALLET --keyring-backend test --node.type {{ celestia_node_type }} --p2p.network {{ celestia_node_p2p_network }}
 
 - name: Initialize Celestia Bridge Node
   shell: |

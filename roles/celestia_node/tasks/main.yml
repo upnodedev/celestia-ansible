@@ -81,3 +81,15 @@
     state: restarted
     daemon_reload: yes
     enabled: yes
+
+- name: Open gateway port
+  ufw:
+    rule: allow
+    proto: tcp
+    port: "{{ celestia_node_gateway_port }}"
+
+- name: Open bridge port
+  ufw:
+    rule: allow
+    proto: tcp
+    port: "{{ celestia_node_bridge_rpc_port }}"

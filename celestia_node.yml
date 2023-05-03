@@ -1,12 +1,12 @@
 ---
-# - name: Prepare
-#   hosts: '{{ target }}'
-#   become: true
-#   gather_facts: false
-#   vars_files:
-#     - '{{ var_file }}'
-#   roles:
-#     - prepare
+- name: Prepare
+  hosts: '{{ target }}'
+  become: true
+  gather_facts: false
+  vars_files:
+    - '{{ var_file }}'
+  roles:
+    - prepare
 
 - name: Install celestia node
   hosts: '{{ target }}'

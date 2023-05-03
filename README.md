@@ -1,159 +1,106 @@
-# Cosmos-based Node Ansible Setup 
+# Celestia ansible script with interactive shell deployment tool
 
-### NOT FULLY TESTED YET
+Upnode has developed a Celestia deployment tool that enables users to deploy a Celestia node without requiring advanced DevOps skills. This tool simplifies the process for Rollkit developers, allowing them to create their rollup without worrying about the complexities of Celestia light node deployment.
 
-## Inventory configuration
+We would like to express our gratitude to Polkachu for providing a battle-tested Ansible script for deploying any Cosmos validator node. You can find it at https://github.com/polkachu/cosmos-validators.
 
-Inventory define server that script will deploy cosmos node to
+## Run using interactive shell
 
-Inventory is configured in file `inventory.ini`
+To start an interactive shell, execute the following command:
 
-This file is gitignored and needed to be created on your own.
-
-## General node configuration
-
-
-
-## Software version configuration
-
-Software version configuration is found at `group_vars/all.yml`
-
-Make sure to update them to latest version before proceeding to next step.
-
-## Chain configuration
-
-Chain configuration for mainnet is found at `group_vars/[mainnets or testnets]/[chain nickname].yml`
-
-You must copy yml file of existing chain to a new chain you are deploying
-
-Chain configuration file consist of following sections
-
-### Basic information
-* network - nickname for that chain (config file name). FOr example, cosmoshub
-* folder - Home of daemon data. For example, .gaiad
-* daemon - Command line daemon executable name. For example, gaiad
-* chain_id - Formal chain ID of that chain. Usually found on chain's doc or explorers such as https://www.mintscan.io/. For example, cosmoshub-4
-* node_version - Node JS version. For example, "v0.11.0" or "v16.16.0"
-
-#### Daemon binary
-
-Daemon binary can be installed from source or prebuilt binary.
-
-**Install from source**
-
-Set `repo` config to daemon's repository URL. For example, https://github.com/cosmos/gaia or https://github.com/tharsis/evmos
-
-**install from prebuilt binary**
-
-Set `binary` config to daemon's binary file URL. For example, https://github.com/evmos/evmos/releases/download/v10.0.0/evmos_10.0.0_Linux_amd64.tar.gz
-
-Moreover, if your binary comes in zip, set `binary_processing` config to `zip`, `gz` or `targz` according to your binary's file extension.
-
-You must choose only one choice
-
-### genesis.json
-
-Set `genesis_processing` to genesis.json file URL. For example, https://github.com/tharsis/mainnet/blob/main/evmos_9001-2/genesis.json.zip?raw=true
-
-Moreover, if your genesis.json comes in zip, set `genesis_processing` config to `zip`, `gz` or `targz` according to your genesis.json's file extension.
-
-### Initial seeds and peers
-* seeds - initial seeds of that chain. Usually found in chain's doc. For example, ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@testnet-seeds.polkachu.com:13456
-* peers (Optional) - initial peers of that chain who operate same kind of daemon. Usually found in chain's doc. For example, 0d0f0e4a149b50a96207523a5408611dae2796b6@198.199.82.109:26656
-
-Initial seeds and peers can contains multiple values separated by comma. For example,
-
-```
-eaa763cde89fcf5a8fe44274a5ee3ce24bce2c5b@64.227.18.169:26656,0d0f0e4a149b50a96207523a5408611dae2796b6@198.199.82.109:26656,c2870ce12cfb08c4ff66c9ad7c49533d2bd8d412@178.170.47.171:26656"
+```bash
+./deploy.sh
 ```
 
-### Snapshot (Optional)
-snapshot_hour and snapshot_minute control which time snapshot be taken each day.
+Follow the instructions, and your node will be up and running in no time. For a demonstration of the interactive shell, check out this demo video.
 
-Recommended config:
+## Using Upnode all-in-one deployment tool
 
-* snapshot_hour = 2
-* snapshot_minute = 0
+We are developing an all-in-one tool to streamline the deployment of various software, including Celestia. With this tool, users can deploy an entire Celestia stack with just a few clicks.
 
-Recommended config will schedule snapshot to run at 2:00 AM everyday
+The tool is currently under development. If you are interested in using it, please show your support by giving us a star.
 
-### KMS / HSM (Optional)
-Specify server IP address that you want to deploy your tmkms HSM controller to
 
-* kms_address - tmkms server IP address.
+## Upgrade version of validator and celestia node
 
-## How to run plackbook
+### Validator daemon upgrade
 
+To upgrade the validator daemon binary in our repository, navigate to the `group_vars` folder and update the `node_version` of the respective chain.
+
+We'd appreciate it if you could open a pull request in our repository.
+
+Our Ansible script has integrated Cosmovisor for this upgrade process. Build the binary and place it in the appropriate folder for Cosmovisor to perform the upgrade.
+
+### Celestia node upgrade
+
+To upgrade the Celestia node version, navigate to the `group_vars` folder and update the `celestia_node_version` of the respective chain.
+
+We'd appreciate it if you could open a pull request in our repository.
+
+Then, run the interactive shell to reinstall (upgrade) the Celestia node on your server.
+
+```bash
+./deploy.sh
 ```
-ansible-playbook main.yml --extra-vars "target=cosmos_theta_main"
+
+## Run manually
+
+### Inventory configuration
+
+The inventory defines the server where the script will deploy the Celestia node.
+
+Configure the inventory in the `inventory.ini` file.
+
+This file is gitignored and must be created manually.
+
+Here is an example of an `inventory.ini` file:
+
+```ini
+[blockspacerace]
+blockspacerace-node ansible_host=88.77.194.206 type=main prepare=true
+
+[mocha]
+mocha-node ansible_host=99.77.194.206 type=main prepare=true
+
+[all:vars]
+ansible_user=youruser
+ansible_password=yourpassword
+ansible_port=22
+; ansible_ssh_private_key_file="ansible-development.pem"
+var_file="group_vars/testnets/{{ group_names[0] }}.yml"
+user_dir="/home/{{ansible_user}}"
+path="/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin:/usr/local/go/bin:{{ user_dir }}/go/bin"
+node_exporter=true
+promtail=false
+log_monitor=https://XXXXXX:XXXXXXXXXXXXXX@logs-prod-011.grafana.net/api/prom/push
+log_name="PREFIX_{{ network }}_{{ type }}"
+node_name=yourcoolname
 ```
 
-## Node installation flow
+### Deploy validator
 
-Run entrypoint playbook in this order
+To deploy the validator, run `main.yml` playbook with `target` variable supplied:
 
-* main.yml - Install initial software (prepare) and install
-* kms.yml - Install HSM integration using tmkms yubihsm (Optional)
+```bash
+ansible-playbook main.yml -e "target=..."
+```
 
-### Node types
-* Main - Main validator node. Doesn't expose any RPC / gRPC / API ports.
-* Backup - Validator backup node to be used in case main node is down
-* Relayer - RPC and API endpoint
+For example:
 
-### Role prepare
-* apt update && aot upgrade
-* Install node_exporter
-* Install promtail
-* Setup firewall
-	* Allow node_exporter port (9100)
-	* Allow SSH port (22)
-	* Deny any other ports
-	* Enable firewall
-* Install cosmos softwares
-	* Install build-essential
-	* Install go
-	* Install cosmovisor
-	* Update .profile to load installed tools
-	* Update .profile to set DAEMON_NAME and DAEMON_HOME environment variable
+```bash
+ansible-playbook main.yml -e "target=blockspacerace"
+```
 
-### Role node_install
-* Clone daemon repository
-* Run `make install` to build and install daemon into go bin folder 
-* Or download daemon binary and copy it into go bin folder
+### Deploy Bridge, Full or Light node 
 
-### Role node_initialize
-* Remove daemon folder (Ex: .gaiad) if it exists
-* Initialize daemon (`gaiad init {{ node_name }} --chain-id {{ chain_id }} --home {{ folder }} -o`)
-* Download config.toml file (Optional, config_file, mostly not used)
-* Download app.toml file (Optional, app_file, mostly not used)
-* Download addrbook.json file (Optional, addrbook_file, mostly not used)
-* Update minimum-gas-prices (Optional, minimum_gas_price)
-* Download genesis.json
-* Set daemon's chain ID
-* Set daemon's p2p port
+To deploy a bridge, full, or light node, run the `celestia_node.yml playbook` with the target variable and `celestia_node_type` variable supplied:
 
-### Role node_configure
-* Get public_ip
-* Update external_address config with public IP and port
-* Update ports in config.toml to use custom port prefix
-* Adjust maximum inbound and outbound peers to 80 and 60
-* Update ports in app.toml to use custom port prefix
-* Adjust pruning settings
-* Adjust indexer settings (main and backup only)
-* Enable RPC, API server and Swagger (relayer only)
-* Enable prometheus in config.toml
-* Config KMS (Optional, kms_address)
+```bash
+ansible-playbook celestia_node.yml -e "target=... celestia_node_type=<bridge|full|light>"
+```
 
-### Role node_launch
-* Update persistent_peers
-* Update seeds
-* Allow prometheus port on firewall
-* Allow p2p port on firewall
-* Create cosmovisor directories
-	* .gaiad/cosmovisor/genesis/bin
-	* .gaiad/cosmovisor/upgrades
-* Copy daemon binary to cosmovisor (.gaiad/cosmovisor/genesis/bin)
-* Create cosmovisor service file
-* Start/Restart cosmovisor service
+For example:
 
-## Backup and Snapshot flow
+```bash
+ansible-playbook celestia_node.yml -e "target=blockspacerace celestia_node_type=light"
+```

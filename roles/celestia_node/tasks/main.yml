@@ -38,18 +38,9 @@
     mode: "0755"
     remote_src: true
 
-- name: Check if keys exists
-  stat:
-    path: "{{ user_dir }}/.celestia-bridge-{{ chain_id }}/keys"
-  register: key_generated
-
-- name: Generate key
-  when: not key_generated.stat.exists
-  shell: cel-key add BRIDGE_WALLET --keyring-backend test --node.type {{ celestia_node_type }} --p2p.network {{ celestia_node_p2p_network }}
-
 - name: Initialize Celestia Bridge Node
   shell: |
-    celestia bridge init \
+    /usr/local/bin/celestia {{ celestia_node_type }} init \
       --p2p.network {{ celestia_node_p2p_network }} \
       --core.ip {{ celestia_node_core_ip }} \
       --core.rpc.port {{ celestia_node_core_rpc_port }} \
@@ -58,28 +49,13 @@
       --gateway.addr 0.0.0.0 \
       --gateway.port {{ celestia_node_gateway_port }} \
       --rpc.addr 0.0.0.0 \
-      --rpc.port {{ celestia_node_bridge_rpc_port }} \
-      --keyring.accname BRIDGE_WALLET
-  when: celestia_node_type == "bridge"
-
-- name: Initialize Celestia Light Node
-  shell: |
-    celestia light init \
-      --p2p.network {{ celestia_node_p2p_network }} \
-      --core.ip {{ celestia_node_core_ip }} \
-      --core.rpc.port {{ celestia_node_core_rpc_port }} \
-      --core.grpc.port {{ celestia_node_core_grpc_port }} \
-      --gateway \
-      --gateway.addr 0.0.0.0 \
-      --gateway.port {{ celestia_node_gateway_port }} \
-      --keyring.accname BRIDGE_WALLET
-  when: celestia_node_type == "light"
+      --rpc.port {{ celestia_node_bridge_rpc_port }}
 
 - name: Copy celestia-bridge service file
   become: true
   template:
     src: celestia-node.service.j2
-    dest: /etc/systemd/system/{{ network }}-celestia-{{ celestia_node_type }}.service
+    dest: /etc/systemd/system/{{ celestia_node_p2p_network }}-celestia-{{ celestia_node_type }}.service
     owner: root
     group: root
     mode: '0644'
@@ -87,18 +63,20 @@
 - name: Start Celestia Bridge
   become: true
   systemd:
-    name: "{{ network }}-celestia-{{ celestia_node_type }}"
+    name: "{{ celestia_node_p2p_network }}-celestia-{{ celestia_node_type }}"
     state: restarted
     daemon_reload: yes
     enabled: yes
 
 - name: Open gateway port
+  become: true
   ufw:
     rule: allow
     proto: tcp
     port: "{{ celestia_node_gateway_port }}"
 
 - name: Open bridge port
+  become: true
   ufw:
     rule: allow
     proto: tcp

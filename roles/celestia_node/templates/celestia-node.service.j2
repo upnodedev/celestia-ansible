@@ -3,7 +3,7 @@ Description=celestia-bridge
 After=network-online.target
 [Service]
 User={{ ansible_user }}
-ExecStart=$(which celestia) {{ celestia_node_type }} start \
+ExecStart=/usr/local/bin/celestia {{ celestia_node_type }} start \
   --gateway \
   --gateway.addr 0.0.0.0 \
   --gateway.port {{ celestia_node_gateway_port }} \

@@ -18,6 +18,8 @@ Follow the instructions, and your node will be up and running in no time. For a 
 
 We are developing an all-in-one tool to streamline the deployment of various software, including Celestia. With this tool, users can deploy an entire Celestia stack with just a few clicks.
 
+![image](https://user-images.githubusercontent.com/4103490/236076446-1f14f839-7d11-4580-bfcd-8f17aee1d072.png)
+
 The tool is currently under development. If you are interested in using it, please show your support by giving us a star.
 
 

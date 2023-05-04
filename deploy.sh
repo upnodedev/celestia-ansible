@@ -38,7 +38,7 @@ user_dir="/home/{{ansible_user}}"
 path="/sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin:/usr/local/go/bin:{{ user_dir }}/go/bin"
 node_exporter=true
 promtail=false
-log_monitor=https://364746:eyJrIjoiMTQ0Mjk0MTdjZTY1MDE2YmIwMDU1YWQzMjRhNTVmZTEzZDU3YTc3MiIsIm4iOiJVcG5vZGVUZXN0IiwiaWQiOjc3NzMxM30=@logs-prod-011.grafana.net/api/prom/push
+log_monitor=https://XXXXXX:XXXXXXXXXXXXXXXXXXXX=@logs-prod-011.grafana.net/api/prom/push
 log_name="PREFIX_{{ network }}_{{ type }}"
 node_name=upnode.org
 EOF

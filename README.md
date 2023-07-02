@@ -1,8 +1,15 @@
 # Celestia ansible script with interactive shell deployment tool
 
+*Note: Blockspacerace testnet is now ended. Please move on to mocha testnet*
+
 Upnode has developed a Celestia deployment tool that enables users to deploy a Celestia node without requiring advanced DevOps skills. This tool simplifies the process for Rollkit developers, allowing them to create their rollup without worrying about the complexities of Celestia light node deployment.
 
 We would like to express our gratitude to Polkachu for providing a battle-tested Ansible script for deploying any Cosmos validator node. You can find it at https://github.com/polkachu/cosmos-validators.
+
+## What we have developed specialized for celestia
+- Ansible script for celestia bridge / full / light node deployment
+- Mechanism to support both mocha and blockspacerace chains in one ansible script switchable by using some kind of variable
+- Interactive shell to enable easy developer-friendly environment to deploy celestia bridge / full / light node and validator. Which is very useful for rollkit developers who want to deploy their own light node.
 
 ## Run using interactive shell
 
@@ -13,15 +20,6 @@ To start an interactive shell, execute the following command:
 ```
 
 Follow the instructions, and your node will be up and running in no time. For a demonstration of the interactive shell, check out this demo video.
-
-## Using Upnode all-in-one deployment tool
-
-We are developing an all-in-one tool to streamline the deployment of various software, including Celestia. With this tool, users can deploy an entire Celestia stack with just a few clicks.
-
-![image](https://user-images.githubusercontent.com/4103490/236076446-1f14f839-7d11-4580-bfcd-8f17aee1d072.png)
-
-The tool is currently under development. If you are interested in using it, please show your support by giving us a star.
-
 
 ## Upgrade version of validator and celestia node
 
@@ -106,3 +104,11 @@ For example:
 ```bash
 ansible-playbook celestia_node.yml -e "target=blockspacerace celestia_node_type=light"
 ```
+
+## Using Upnode all-in-one deployment tool
+
+We are developing an all-in-one tool to streamline the deployment of various software, including Celestia. With this tool, users can deploy an entire Celestia stack with just a few clicks.
+
+![image](https://user-images.githubusercontent.com/4103490/236076446-1f14f839-7d11-4580-bfcd-8f17aee1d072.png)
+
+The tool is currently under development. If you are interested in using it, please show your support by giving us a star.
